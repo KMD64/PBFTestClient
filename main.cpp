@@ -6,6 +6,8 @@
 #include <thread>
 #include <chrono>
 #include <iomanip>
+#include <errno.h>
+#include "tcpsocket.h"
 using namespace std::chrono_literals;
 using namespace std::chrono;
 using std::endl;
@@ -13,13 +15,15 @@ using std::cout;
 using std::cerr;
 
 const char *date_template = "[%Y-%m-%d %H:%M:%S]";
+const char *name="Test";
 struct message{
-    time_t time;
+    time_point<system_clock> time;
     std::string name;
     operator std::string(){
         std::ostringstream oss;
-        std::tm* tm = std::gmtime(&time);
-        oss<<std::put_time(tm,date_template)<<name;
+        auto tt = system_clock::to_time_t(time);
+        std::tm tm = *std::gmtime(&tt);
+        oss<<std::put_time(&tm,date_template)<<"%"<<name;
         return oss.str();
     }
 };
@@ -27,21 +31,20 @@ struct message{
 int main()
 {
     cout<<"Configuration started"<<endl;
-    int c_handle = socket(AF_UNIX,SOCK_DGRAM,0);
-    if(c_handle){
-        cerr<<"Error: can't create socket"<<endl;
-        return -1;
-    }
-    sockaddr_in s_address{AF_UNIX,htons(4223),INADDR_LOOPBACK};
-    if(bind(c_handle,reinterpret_cast<sockaddr *>(&s_address),sizeof(s_address))){
-        cerr<<"Error: can't bind socket"<<endl;
-        return -1;
+    TcpSocket socket;
+    try{
+        socket.connect("127.0.0.1",32276);
+    }catch(std::runtime_error e){
+        cerr<<e.what()<<endl;
+        return errno;
     }
     cout<<"Configuration finished."<<endl;
-    cout<<"Sending data. Press Esc for exit.";
+    cout<<"Sending data. Press Esc for exit."<<endl;
     while (true) {
-        message m{system_clock::now().time_since_epoch().count(),"Test"};
-        std::this_thread::sleep_for(20s);
+        message m{system_clock::now(),name};
+        cout<<(std::string)m<<endl;
+        socket.send(m,0);
+        std::this_thread::sleep_for(2s);
     }
     return 0;
 }

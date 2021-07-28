@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
 
 project(PBF_Task_Client LANGUAGES CXX)
-
+add_subdirectory(Net)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-add_executable(PBF_Task_Client main.cpp tcpsocket.h tcpsocket.cpp)
+add_library(Net tcpsocket.h tcpsocket.cpp)
+add_executable(PBF_Task_Client main.cpp)
+target_link_libraries(PBF_Task_Client PUBLIC Net)
+target_include_directories(PBF_Task_Client "${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/Net")
