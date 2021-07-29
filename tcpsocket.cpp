@@ -3,11 +3,18 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <stdexcept>
-
+#include <unistd.h>
 
 TcpSocket::TcpSocket()
 {
     _handle = socket(AF_INET,SOCK_STREAM,0);
+}
+
+TcpSocket::~TcpSocket()
+{
+    if(_handle>=0){
+        close(_handle);
+    }
 }
 
 TcpSocket::operator bool()

@@ -1,8 +1,6 @@
 #include <iostream>
 #include <thread>
 
-#include <unistd.h>
-#include <signal.h>
 #include <errno.h>
 
 #include "tcpsocket.h"
@@ -25,12 +23,6 @@ int main(int argc, char ** argv)
     std::string client_name = argv[1];
     int port = std::atoi(argv[2]);
     seconds period{std::atoi(argv[3])};
-
-    struct sigaction sa,sao;
-
-
-
-
 
     try{
         TcpSocket socket;
