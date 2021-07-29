@@ -1,9 +1,13 @@
 #include <iostream>
-#include <sstream>
-#include <system_error>
+#include <thread>
+
+#include <unistd.h>
+#include <signal.h>
 #include <errno.h>
+
 #include "tcpsocket.h"
 #include "message.h"
+
 
 using namespace std::chrono_literals;
 using namespace std::chrono;
@@ -12,22 +16,25 @@ using std::cout;
 using std::cerr;
 
 
-
-
 int main(int argc, char ** argv)
 {
     cout<<"Configuration started"<<endl;
 
-    if(argc<4)return 4;
+    if(argc<4)return EINVAL;
 
     std::string client_name = argv[1];
     int port = std::atoi(argv[2]);
     seconds period{std::atoi(argv[3])};
 
-    TcpSocket socket;
-    try{
-        socket.connect("127.0.0.1",port);
+    struct sigaction sa,sao;
 
+
+
+
+
+    try{
+        TcpSocket socket;
+        socket.connect("127.0.0.1",port);
     //Here starts the cycle
     cout<<"Configuration finished."<<endl;
     cout<<"Sending data."<<endl;
