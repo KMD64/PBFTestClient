@@ -1,9 +1,7 @@
 #include <iostream>
 #include <sstream>
-#include <thread>
-#include <iomanip>
+#include <system_error>
 #include <errno.h>
-#include <linux/input.h>
 #include "tcpsocket.h"
 #include "message.h"
 
@@ -33,6 +31,7 @@ int main(int argc, char ** argv)
     //Here starts the cycle
     cout<<"Configuration finished."<<endl;
     cout<<"Sending data."<<endl;
+
     while (true) {
         Message m{system_clock::now(),client_name};
         std::string s(m);
